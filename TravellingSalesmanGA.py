@@ -160,17 +160,19 @@ def genetic_algorithm(G, POPULATION_SIZE: int,  MUTATION_RATE: float, NUM_OF_GEN
     #initialize random population
     population = random_population(G.nodes(),POPULATION_SIZE)
 
-    for generation in range(NUM_OF_GENERATIONS):
+    #calculate the fitness of the initial population
+    fitness_values = [fitness_function(chrom) for chrom in population]
 
-        fitness_values = [fitness_function(chrom) for chrom in population]
+    #initial population statistics
+    best_fitness = min(fitness_values)
+    average_fitness = sum(fitness_values) / len(fitness_values)
+    worst_fitness = max(fitness_values)
         
-        best_fitness = min(fitness_values)
-        average_fitness = sum(fitness_values) / len(fitness_values)
-        worst_fitness = max(fitness_values)
-        
-        fitness_over_time["best"].append(best_fitness)
-        fitness_over_time["average"].append(average_fitness)
-        fitness_over_time["worst"].append(worst_fitness)
+    fitness_over_time["best"].append(best_fitness)
+    fitness_over_time["average"].append(average_fitness)
+    fitness_over_time["worst"].append(worst_fitness)
+
+    for generation in range(NUM_OF_GENERATIONS):    
 
         #elitism, we choose which portion of the population will go directly to the next generation without processing
         elite_indices = sorted(range(len(fitness_values)), key=lambda k: fitness_values[k])[:ELITE_SIZE]
@@ -198,7 +200,20 @@ def genetic_algorithm(G, POPULATION_SIZE: int,  MUTATION_RATE: float, NUM_OF_GEN
 
             if len(next_generation) < POPULATION_SIZE:
                 next_generation.append(offspring2)
+        
 
+        #calculate next generation fitness values
+        fitness_values = [fitness_function(chrom) for chrom in next_generation]
+        
+        best_fitness = min(fitness_values)
+        average_fitness = sum(fitness_values) / len(fitness_values)
+        worst_fitness = max(fitness_values)
+        
+        fitness_over_time["best"].append(best_fitness)
+        fitness_over_time["average"].append(average_fitness)
+        fitness_over_time["worst"].append(worst_fitness)
+
+        #update the population
         population = next_generation
     
 
@@ -224,14 +239,16 @@ def genetic_algorithm(G, POPULATION_SIZE: int,  MUTATION_RATE: float, NUM_OF_GEN
 if __name__ == "__main__":
 
     CITIES = 5
-    POPULATION_SIZE = 5
-    ELITE_SIZE = 1
+    POPULATION_SIZE = 6
+    ELITE_SIZE = 2
     MUTATION_RATE = 0.1
-    NUM_OF_GENERATIONS = 50
+    NUM_OF_GENERATIONS = 100
 
     G = define_graph(CITIES)
     final_population = genetic_algorithm(G, POPULATION_SIZE, MUTATION_RATE, NUM_OF_GENERATIONS, ELITE_SIZE)
+    final_fitness = [fitness_function(chrom) for chrom in final_population]
     print(f"Final Population: {final_population}")
+    print(f"Final Fitness Scores: {final_fitness}")
 
 
     
