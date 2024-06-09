@@ -34,13 +34,12 @@ def random_population(nodes: list, population_size:int):
         random.shuffle(middle_nodes)
         sequence = [0] + middle_nodes + [0] #starting and ending node is always city 0
         population.append(sequence)
-    print(population)
     
     return population
 
 
 #evaluate the fitness score of a chromosome which is the total cost from the starting node 0 to the destination 0
-def fitness_function(chromosome: list):
+def fitness_function(G, chromosome: list):
     cost = 0
 
     for gene in range(len(chromosome) - 1):
@@ -161,7 +160,7 @@ def genetic_algorithm(G, POPULATION_SIZE: int,  MUTATION_RATE: float, NUM_OF_GEN
     population = random_population(G.nodes(),POPULATION_SIZE)
 
     #calculate the fitness of the initial population
-    fitness_values = [fitness_function(chrom) for chrom in population]
+    fitness_values = [fitness_function(G, chrom) for chrom in population]
 
     #initial population statistics
     best_fitness = min(fitness_values)
@@ -203,7 +202,7 @@ def genetic_algorithm(G, POPULATION_SIZE: int,  MUTATION_RATE: float, NUM_OF_GEN
         
 
         #calculate next generation fitness values
-        fitness_values = [fitness_function(chrom) for chrom in next_generation]
+        fitness_values = [fitness_function(G, chrom) for chrom in next_generation]
         
         best_fitness = min(fitness_values)
         average_fitness = sum(fitness_values) / len(fitness_values)
@@ -232,23 +231,26 @@ def genetic_algorithm(G, POPULATION_SIZE: int,  MUTATION_RATE: float, NUM_OF_GEN
 
 
 
-    
-
-
-
-if __name__ == "__main__":
-
+def main():
     CITIES = 5
-    POPULATION_SIZE = 6
-    ELITE_SIZE = 2
-    MUTATION_RATE = 0.1
+    POPULATION_SIZE = 3
+    ELITE_SIZE = 1
+    MUTATION_RATE = 0.3
     NUM_OF_GENERATIONS = 100
 
     G = define_graph(CITIES)
     final_population = genetic_algorithm(G, POPULATION_SIZE, MUTATION_RATE, NUM_OF_GENERATIONS, ELITE_SIZE)
-    final_fitness = [fitness_function(chrom) for chrom in final_population]
+    final_fitness = [fitness_function(G,chrom) for chrom in final_population]
     print(f"Final Population: {final_population}")
     print(f"Final Fitness Scores: {final_fitness}")
+
+
+
+if __name__ == "__main__":
+    main()
+
+    
+
 
 
     
